@@ -1,24 +1,53 @@
 """Application entry point for ClipTranslate."""
 
 import logging
+import logging.handlers
 import sys
 from pathlib import Path
 
+from config import _base_dir
+
 
 def _setup_logging() -> None:
-    """Configure logging to file and console."""
-    log_dir = Path(__file__).parent / "resource"
-    log_dir.mkdir(exist_ok=True)
+    """Configure rotating logging to file and console."""
+    if getattr(_setup_logging, "_done", False):
+        return
+
+    log_dir = _base_dir() / "resource"
+    log_dir.mkdir(parents=True, exist_ok=True)
     log_file = log_dir / "app.log"
 
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-        handlers=[
-            logging.FileHandler(log_file, encoding="utf-8"),
-            logging.StreamHandler(sys.stdout),
-        ],
+    formatter = logging.Formatter(
+        fmt="%(asctime)s [%(levelname)s] [%(threadName)s] %(name)s: %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
     )
+
+    file_handler = logging.handlers.RotatingFileHandler(
+        log_file,
+        maxBytes=5 * 1024 * 1024,  # 5 MB
+        backupCount=3,
+        encoding="utf-8",
+    )
+    file_handler.setFormatter(formatter)
+
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setFormatter(formatter)
+
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.DEBUG)
+    root_logger.addHandler(file_handler)
+    root_logger.addHandler(console_handler)
+
+    def _log_unhandled_exception(exc_type, exc_value, exc_traceback):
+        if issubclass(exc_type, KeyboardInterrupt):
+            sys.__excepthook__(exc_type, exc_value, exc_traceback)
+            return
+        logging.getLogger().exception(
+            "Unhandled exception", exc_info=(exc_type, exc_value, exc_traceback)
+        )
+
+    sys.excepthook = _log_unhandled_exception
+    _setup_logging._done = True
 
 
 def main() -> None:
