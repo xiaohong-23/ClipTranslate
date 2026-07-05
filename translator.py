@@ -95,14 +95,14 @@ class TranslationEngine:
             logger.info("Translation succeeded: '%s' -> '%s'", text[:30], result[:30] if result else "")
             return result
 
-        except TencentCloudSDKException as exc:
-            logger.error("Tencent Cloud SDK error: %s", exc)
+        except TencentCloudSDKException:
+            logger.exception("Tencent Cloud SDK error")
             return None
-        except json.JSONDecodeError as exc:
-            logger.error("JSON decode error (unexpected): %s", exc)
+        except json.JSONDecodeError:
+            logger.exception("JSON decode error (unexpected)")
             return None
-        except Exception as exc:
-            logger.error("Unexpected translation error: %s", exc)
+        except Exception:
+            logger.exception("Unexpected translation error")
             return None
 
 
@@ -200,8 +200,8 @@ class ClipboardTranslator:
             self._keyctrl.press("c")
             self._keyctrl.release("c")
             self._keyctrl.release(Key.ctrl)
-        except Exception as exc:
-            logger.error("Copy simulation failed: %s", exc)
+        except Exception:
+            logger.exception("Copy simulation failed")
 
     def _paste(self) -> None:
         """Simulate Ctrl+V to paste text."""
@@ -210,8 +210,8 @@ class ClipboardTranslator:
             self._keyctrl.press("v")
             self._keyctrl.release("v")
             self._keyctrl.release(Key.ctrl)
-        except Exception as exc:
-            logger.error("Paste simulation failed: %s", exc)
+        except Exception:
+            logger.exception("Paste simulation failed")
 
     def _get_clipboard(self) -> str:
         """Read text from the clipboard with retry logic.
@@ -224,8 +224,8 @@ class ClipboardTranslator:
                 text = pyperclip.paste()
                 if text:
                     return text
-            except Exception as exc:
-                logger.debug("Clipboard read attempt %d failed: %s", attempt, exc)
+            except Exception:
+                logger.debug("Clipboard read attempt %d failed", attempt, exc_info=True)
             time.sleep(self._CLIPBOARD_RETRY_INTERVAL)
         return ""
 
@@ -265,8 +265,8 @@ class ClipboardTranslator:
                 if self._notifier:
                     self._notifier("翻译失败，请检查配置")
 
-        except Exception as exc:
-            logger.error("Translation workflow error: %s", exc)
+        except Exception:
+            logger.exception("Translation workflow error")
             if self._notifier:
                 self._notifier("翻译过程中发生错误")
         finally:

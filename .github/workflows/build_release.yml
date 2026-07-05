@@ -28,14 +28,14 @@ jobs:
 
     - name: Build with PyInstaller
       run: |
-        pyinstaller --noconfirm --windowed --icon=resource\logo.ico --noconsole ClipTranslate.py  # 执行打包命令
+        python build.py  # 运行打包脚本，自动处理 Conda DLL 和资源复制
 
     - name: Archive build artifacts
       if: success()
       uses: actions/upload-artifact@v3
       with:
         name: build
-        path: dist/  # 上传打包后的文件夹作为构建工件
+        path: dist/ClipTranslate/  # 上传打包后的文件夹作为构建工件
 
   release:
     if: github.ref == 'refs/heads/master' # 只有当 master 分支更新时才 release

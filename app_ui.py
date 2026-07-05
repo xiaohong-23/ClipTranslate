@@ -61,8 +61,8 @@ class ClipTranslateApp:
         if icon_path.exists():
             try:
                 self._app.iconbitmap(str(icon_path))
-            except Exception as exc:
-                logger.warning("Failed to set window icon: %s", exc)
+            except Exception:
+                logger.exception("Failed to set window icon")
 
         # SecretId
         ctk.CTkLabel(self._app, text="SecretId:", font=("华文行楷", 16)).pack(pady=5)
@@ -136,8 +136,8 @@ class ClipTranslateApp:
             self._translator.change_hotkey(new_hotkey)
             self._save_config()
             self._show_popup(f"快捷键已设置为: {new_hotkey}", duration=2000)
-        except Exception as exc:
-            logger.error("Failed to read hotkey: %s", exc)
+        except Exception:
+            logger.exception("Failed to read hotkey")
             self._show_popup("快捷键设置失败", duration=2000)
 
     def _on_save(self) -> None:
@@ -216,8 +216,8 @@ class ClipTranslateApp:
             )
             threading.Thread(target=self._tray_icon.run, daemon=True).start()
             logger.info("Tray icon started")
-        except Exception as exc:
-            logger.error("Failed to create tray icon: %s", exc)
+        except Exception:
+            logger.exception("Failed to create tray icon")
 
     def _check_window_state(self) -> None:
         """Poll window state and hide to tray when minimized."""
