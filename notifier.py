@@ -43,5 +43,5 @@ class Notifier:
                 toast.AddImage(ToastDisplayImage.fromPath(str(self._icon_path)))
             self._toaster.show_toast(toast)
             logger.debug("Notification shown: %s", message)
-        except Exception as exc:
-            logger.warning("Failed to show notification: %s", exc)
+        except Exception:
+            logger.exception("Failed to show notification")
