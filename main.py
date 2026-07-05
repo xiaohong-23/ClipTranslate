@@ -5,11 +5,16 @@ import logging.handlers
 import sys
 from pathlib import Path
 
+from config import _base_dir
+
 
 def _setup_logging() -> None:
     """Configure rotating logging to file and console."""
-    log_dir = Path(__file__).parent / "resource"
-    log_dir.mkdir(exist_ok=True)
+    if getattr(_setup_logging, "_done", False):
+        return
+
+    log_dir = _base_dir() / "resource"
+    log_dir.mkdir(parents=True, exist_ok=True)
     log_file = log_dir / "app.log"
 
     formatter = logging.Formatter(
@@ -37,11 +42,12 @@ def _setup_logging() -> None:
         if issubclass(exc_type, KeyboardInterrupt):
             sys.__excepthook__(exc_type, exc_value, exc_traceback)
             return
-        logging.getLogger("ClipTranslate").exception(
+        logging.getLogger().exception(
             "Unhandled exception", exc_info=(exc_type, exc_value, exc_traceback)
         )
 
     sys.excepthook = _log_unhandled_exception
+    _setup_logging._done = True
 
 
 def main() -> None:
