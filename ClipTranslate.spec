@@ -1,36 +1,12 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-from pathlib import Path
-
-# Collect resource files so they are bundled into the output folder
-resource_dir = Path(SPECPATH) / "resource"
-added_files = []
-if resource_dir.exists():
-    for item in resource_dir.rglob("*"):
-        if item.is_file():
-            rel_path = item.relative_to(SPECPATH)
-            added_files.append((str(item), str(rel_path.parent)))
 
 a = Analysis(
-    ['main.py'],
+    ['F:\\Desktop\\Pyproject\\ClipTranslate\\ClipTranslate.py'],
     pathex=[],
-    binaries=[],
-    datas=added_files,
-    hiddenimports=[
-        'customtkinter',
-        'keyboard',
-        'pyperclip',
-        'pystray',
-        'pynput.keyboard._win32',
-        'pynput.mouse._win32',
-        'PIL',
-        'windows_toasts',
-        'tencentcloud.common',
-        'tencentcloud.common.common_client',
-        'tencentcloud.common.credential',
-        'tencentcloud.common.profile.client_profile',
-        'tencentcloud.common.profile.http_profile',
-    ],
+    binaries=[('F:\\Mincoda\\Library\\bin\\tcl86t.dll', '.'), ('F:\\Mincoda\\Library\\bin\\tk86t.dll', '.'), ('F:\\Mincoda\\Library\\bin\\ffi.dll', '.'), ('F:\\Mincoda\\Library\\bin\\liblzma.dll', '.'), ('F:\\Mincoda\\Library\\bin\\libbz2.dll', '.'), ('F:\\Mincoda\\Library\\bin\\zlib.dll', '.')],
+    datas=[],
+    hiddenimports=[],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -56,7 +32,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['resource/logo.ico'],
+    icon=['F:\\Desktop\\Pyproject\\ClipTranslate\\resource\\logo.ico'],
 )
 coll = COLLECT(
     exe,
