@@ -5,7 +5,7 @@ import logging.handlers
 import sys
 from pathlib import Path
 
-from config import _base_dir
+from config import _runtime_dir
 
 
 def _setup_logging() -> None:
@@ -13,7 +13,7 @@ def _setup_logging() -> None:
     if getattr(_setup_logging, "_done", False):
         return
 
-    log_dir = _base_dir() / "resource"
+    log_dir = _runtime_dir() / "resource"
     log_dir.mkdir(parents=True, exist_ok=True)
     log_file = log_dir / "app.log"
 

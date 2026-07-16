@@ -13,9 +13,23 @@ def _base_dir() -> Path:
     """Return the application base directory.
 
     Works both in development and when bundled by PyInstaller.
+    In a bundled app this points to the PyInstaller extraction directory
+    (where bundled resources such as icons live).
     """
     if getattr(sys, "_MEIPASS", None):
         return Path(sys._MEIPASS)
+    return Path(__file__).parent
+
+
+def _runtime_dir() -> Path:
+    """Return a writable directory for runtime data.
+
+    In development this is the project root. In a bundled PyInstaller app
+    this is the directory containing the executable, so logs and config.ini
+    persist across runs and are easy for users to find.
+    """
+    if getattr(sys, "frozen", False):
+        return Path(sys.executable).parent
     return Path(__file__).parent
 
 
@@ -41,7 +55,7 @@ class ConfigManager:
         """
         if config_path is None:
             # Determine project root relative to this file
-            self._config_file = _base_dir() / "resource" / "config.ini"
+            self._config_file = _runtime_dir() / "resource" / "config.ini"
         else:
             self._config_file = Path(config_path)
 
