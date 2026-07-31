@@ -129,15 +129,29 @@ class ClipTranslateApp:
         """Capture a new hotkey from keyboard input."""
         import keyboard as kb
 
+        # Unbind the old hotkey while capturing the new one so pressing the
+        # intended shortcut doesn't fire the previous _execute callback.
+        old_hotkey = self._translator.hotkey
+        kb.remove_all_hotkeys()
+
         self._show_popup("请按下新快捷键...", duration=1500)
         try:
-            new_hotkey = kb.read_hotkey(suppress=False)
+            new_hotkey = kb.read_hotkey(suppress=True)
+            if not new_hotkey:
+                self._show_popup("已取消", duration=1500)
+                self._translator.hotkey = old_hotkey
+                return
+            if "+" not in new_hotkey:
+                self._show_popup("无效的快捷键（需组合键）", duration=2000)
+                self._translator.hotkey = old_hotkey
+                return
             self._hotkey_var.set(new_hotkey)
-            self._translator.change_hotkey(new_hotkey)
             self._save_config()
+            self._translator.change_hotkey(new_hotkey)
             self._show_popup(f"快捷键已设置为: {new_hotkey}", duration=2000)
         except Exception:
             logger.exception("Failed to read hotkey")
+            self._translator.hotkey = old_hotkey
             self._show_popup("快捷键设置失败", duration=2000)
 
     def _on_save(self) -> None:
