@@ -131,7 +131,13 @@ class ClipTranslateApp:
 
         self._show_popup("请按下新快捷键...", duration=1500)
         try:
-            new_hotkey = kb.read_hotkey(suppress=False)
+            new_hotkey = kb.read_hotkey(suppress=True)
+            if not new_hotkey:
+                self._show_popup("已取消", duration=1500)
+                return
+            if "+" not in new_hotkey:
+                self._show_popup("无效的快捷键（需组合键）", duration=2000)
+                return
             self._hotkey_var.set(new_hotkey)
             self._translator.change_hotkey(new_hotkey)
             self._save_config()
